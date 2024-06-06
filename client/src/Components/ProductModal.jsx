@@ -46,7 +46,7 @@ const ProductModal = ({ id, showPopup, setShowPopup }) => {
                   <div key={index} className="mb-3">
                     <label className="form-label">Image {index + 1}:</label>
                     <div>
-                      <img src={image.url} alt={`Product ${index + 1}`} className="img-thumbnail" />
+                      <img src={`http://localhost:5000/images/uploads/${product.images[0].url}`} alt={`Product ${index + 1}`} className="img-thumbnail" />
                       <p>{image.description}</p>
                     </div>
                   </div>

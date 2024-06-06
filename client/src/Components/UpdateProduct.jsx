@@ -12,7 +12,7 @@ const UpdateProduct = () => {
   const { products, status } = useSelector((state) => state.products);
 
   useEffect(() => {
-    if (id) {
+    if (id && products.length > 0) {
       const singleProduct = products.find((product) => product._id === id);
       if (singleProduct) {
         setUpdateData(singleProduct);
@@ -35,10 +35,11 @@ const UpdateProduct = () => {
     const imagesArray = [];
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
-      imagesArray.push(file);
+      imagesArray.push({ url: URL.createObjectURL(file), description: file.name });
     }
     setUpdateData({ ...updateData, images: imagesArray });
   };
+  
 
   const handleUpdate = (e) => {
     e.preventDefault();
@@ -54,7 +55,7 @@ const UpdateProduct = () => {
   return (
     <div className="container my-5">
       <h2>Edit Product</h2>
-      <form onSubmit={handleUpdate} encType="multipart/form-data">
+      <form onSubmit={handleUpdate}>
         <div className="mb-3">
           <label className="form-label">Product Name</label>
           <input
@@ -65,6 +66,7 @@ const UpdateProduct = () => {
             onChange={handleInputChange}
           />
         </div>
+
         <div className="mb-3">
           <label className="form-label">Description</label>
           <input
@@ -75,6 +77,7 @@ const UpdateProduct = () => {
             onChange={handleInputChange}
           />
         </div>
+
         <div className="mb-3">
           <label className="form-label">Price</label>
           <input
@@ -85,6 +88,7 @@ const UpdateProduct = () => {
             onChange={handleInputChange}
           />
         </div>
+
         <div className="mb-3">
           <label className="form-label">Category</label>
           <input
@@ -115,6 +119,8 @@ const UpdateProduct = () => {
           />
           <label className="form-check-label">Featured</label>
         </div>
+
+        {/* Other form inputs */}
         <div className="mb-3">
           <label htmlFor="image" className="form-label">
             Image Upload
@@ -126,6 +132,13 @@ const UpdateProduct = () => {
             onChange={handleImageChange}
             multiple
           />
+          {updateData.images && updateData.images.length > 0 && (
+            <img
+              src={`http://localhost:5000/images/uploads/${updateData.images[0].url}`}
+              alt={updateData.description}
+              width="50"
+            />
+          )}
         </div>
         <button className="btn btn-primary" type="submit">
           Submit

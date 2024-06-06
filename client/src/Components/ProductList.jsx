@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchProducts, deleteProduct } from "../features/productSlice";
 import { useNavigate } from "react-router-dom";
 import ProductModal from "./ProductModal";
+// import LoadingSpinner from "./LoadingSpinner";
+// import ErrorAlert from "./ErrorAlert";
 
 const ProductList = () => {
   const [showPopup, setShowPopup] = useState(false);
@@ -13,7 +15,7 @@ const ProductList = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const products = useSelector((state) => state.products.products);
+  const { products, loading, error } = useSelector((state) => state.products);
 
   useEffect(() => {
     dispatch(fetchProducts());
@@ -35,22 +37,32 @@ const ProductList = () => {
   const filteredProducts = products.filter((product) => {
     if (inStockFilter && !product.inStock) return false;
     if (featuredFilter && !product.isFeatured) return false;
-    if (searchQuery && !product.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+    if (
+      searchQuery &&
+      !product.name.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+      return false;
     return true;
   });
 
+  // Pagination
   const [currentPage, setCurrentPage] = useState(1);
-  const [productsPerPage] = useState(5);
-
+  const productsPerPage = 5;
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+  const currentProducts = filteredProducts.slice(
+    indexOfFirstProduct,
+    indexOfLastProduct
+  );
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
     <div className="container">
       <h1 className="my-4">Product List</h1>
+      {/* {loading && <LoadingSpinner />} 
+      {error && <ErrorAlert message={error} />}  */}
+      {/* Filter options */}
       <div className="mb-3">
         <input
           type="checkbox"
@@ -75,6 +87,7 @@ const ProductList = () => {
           onChange={(e) => setSearchQuery(e.target.value)}
         />
       </div>
+      {/* Product table */}
       <table className="table">
         <thead>
           <tr>
@@ -98,10 +111,14 @@ const ProductList = () => {
               <td>{product.inStock ? "Yes" : "No"}</td>
               <td>{product.isFeatured ? "Yes" : "No"}</td>
               <td>
-                {product.images && product.images.length > 0 && (
-                  <img src={`/${product.images[0].url}`} alt={product.name} width="50" />
-                )}
-              </td>
+        {product.images && product.images.length > 0 && (
+          <img
+            src={`http://localhost:5000/images/uploads/${product.images[0].url}`}
+            alt={product.description}
+            width="50"
+          />
+        )}
+      </td>
               <td>
                 <button
                   className="btn btn-primary me-1"
@@ -126,30 +143,49 @@ const ProductList = () => {
           ))}
         </tbody>
       </table>
+      {/* Pagination */}
       <nav aria-label="Page navigation example">
         <ul className="pagination">
           <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-            <button className="page-link" onClick={() => paginate(currentPage - 1)}>
+            <button
+              className="page-link"
+              onClick={() => paginate(currentPage - 1)}
+            >
               Previous
             </button>
           </li>
-          {Array.from({ length: Math.ceil(filteredProducts.length / productsPerPage) }).map((_, index) => (
+          {Array.from({
+            length: Math.ceil(filteredProducts.length / productsPerPage),
+          }).map((_, index) => (
             <li
               key={index}
-              className={`page-item ${index + 1 === currentPage ? "active" : ""}`}
+              className={`page-item ${
+                index + 1 === currentPage ? "active" : ""
+              }`}
             >
               <button className="page-link" onClick={() => paginate(index + 1)}>
                 {index + 1}
               </button>
             </li>
           ))}
-          <li className={`page-item ${currentPage === Math.ceil(filteredProducts.length / productsPerPage) ? "disabled" : ""}`}>
-            <button className="page-link" onClick={() => paginate(currentPage + 1)}>
+          <li
+            className={`page-item ${
+              currentPage ===
+              Math.ceil(filteredProducts.length / productsPerPage)
+                ? "disabled"
+                : ""
+            }`}
+          >
+            <button
+              className="page-link"
+              onClick={() => paginate(currentPage + 1)}
+            >
               Next
             </button>
           </li>
         </ul>
       </nav>
+      {/* Product modal */}
       {showPopup && (
         <ProductModal
           id={selectedProductId}

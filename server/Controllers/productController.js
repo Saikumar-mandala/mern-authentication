@@ -1,4 +1,5 @@
 const Product = require("../models/Product");
+const path = require("path");
 
 // Get all products
 const getAllProducts = async (req, res) => {
@@ -23,41 +24,49 @@ const getProductById = async (req, res) => {
   }
 };
 
-// Create a new product
+
 const createProduct = async (req, res) => {
-  const { name, description, price, category, inStock, isFeatured, tags } = req.body;
-
-  let images = [];
-  if (req.files) {
-    images = req.files.map(file => ({ url: file.path, description: file.originalname }));
-  }
-
-  const newProduct = new Product({
-    name,
-    description,
-    price,
-    category,
-    inStock,
-    isFeatured,
-    tags: tags ? tags.split(',').map(tag => tag.trim()) : [],
-    images
-  });
-
   try {
+    const { name, description, price, category, inStock, isFeatured, tags } = req.body;
+    const images = req.files.map(file => ({
+      url: file.filename, // Store only the filename
+      description: file.originalname,
+    }));
+
+    // Create a new product instance
+    const newProduct = new Product({
+      name,
+      description,
+      price,
+      category,
+      inStock,
+      isFeatured,
+      tags: tags.split(',').map(tag => tag.trim()), // assuming tags are comma-separated
+      images,
+    });
+
+    // Save the product to the database
     const savedProduct = await newProduct.save();
-    res.status(201).json(savedProduct);
+
+    res.status(201).json(savedProduct); // Return the saved product
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.error('Error creating product:', error);
+    res.status(500).json({ message: 'Failed to create product' });
   }
 };
 
+
 // Update a product
 const updateProduct = async (req, res) => {
-  const { name, description, price, category, inStock, isFeatured, tags } = req.body;
+  const { name, description, price, category, inStock, isFeatured, tags } =
+    req.body;
 
   let images = [];
   if (req.files) {
-    images = req.files.map(file => ({ url: file.path, description: file.originalname }));
+    images = req.files.map((file) => ({
+      url: file.path,
+      description: file.originalname,
+    }));
   }
 
   try {
@@ -70,8 +79,8 @@ const updateProduct = async (req, res) => {
         category,
         inStock,
         isFeatured,
-        tags: tags ? tags.split(',').map(tag => tag.trim()) : [],
-        images
+        tags: tags ? tags.split(",").map((tag) => tag.trim()) : [],
+        images,
       },
       { new: true }
     );

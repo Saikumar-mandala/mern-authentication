@@ -47,116 +47,49 @@ const CreateProduct = () => {
       <form onSubmit={handleSubmit}>
         <div className="row mb-3">
           <div className="col-md-6">
-            <label htmlFor="name" className="form-label">
-              Name
-            </label>
-            <input
-              type="text"
-              name="name"
-              className="form-control"
-              onChange={handleChange}
-            />
+            <label htmlFor="name" className="form-label">Name</label>
+            <input type="text" name="name" className="form-control" onChange={handleChange} />
           </div>
           <div className="col-md-6">
-            <label htmlFor="description" className="form-label">
-              Description
-            </label>
-            <input
-              type="text"
-              name="description"
-              className="form-control"
-              onChange={handleChange}
-            />
+            <label htmlFor="description" className="form-label">Description</label>
+            <input type="text" name="description" className="form-control" onChange={handleChange} />
           </div>
         </div>
         <div className="row mb-3">
           <div className="col-md-6">
-            <label htmlFor="price" className="form-label">
-              Price
-            </label>
-            <input
-              type="number"
-              name="price"
-              className="form-control"
-              onChange={handleChange}
-            />
+            <label htmlFor="price" className="form-label">Price</label>
+            <input type="number" name="price" className="form-control" onChange={handleChange} />
           </div>
           <div className="col-md-6">
-            <label htmlFor="category" className="form-label">
-              Category
-            </label>
-            <input
-              type="text"
-              name="category"
-              className="form-control"
-              onChange={handleChange}
-            />
+            <label htmlFor="category" className="form-label">Category</label>
+            <input type="text" name="category" className="form-control" onChange={handleChange} />
           </div>
         </div>
         <div className="row mb-3">
           <div className="col-md-6">
             <div className="form-check">
-              <input
-                type="checkbox"
-                className="form-check-input"
-                id="inStock"
-                name="inStock"
-                checked={product.inStock}
-                onChange={(e) =>
-                  setProduct({ ...product, inStock: e.target.checked })
-                }
-              />
-              <label className="form-check-label" htmlFor="inStock">
-                In Stock
-              </label>
+              <input type="checkbox" className="form-check-input" id="inStock" name="inStock" checked={product.inStock} onChange={(e) => setProduct({ ...product, inStock: e.target.checked })} />
+              <label className="form-check-label" htmlFor="inStock">In Stock</label>
             </div>
           </div>
           <div className="col-md-6">
             <div className="form-check">
-              <input
-                type="checkbox"
-                className="form-check-input"
-                id="isFeatured"
-                name="isFeatured"
-                checked={product.isFeatured}
-                onChange={(e) =>
-                  setProduct({ ...product, isFeatured: e.target.checked })
-                }
-              />
-              <label className="form-check-label" htmlFor="isFeatured">
-                Featured
-              </label>
+              <input type="checkbox" className="form-check-input" id="isFeatured" name="isFeatured" checked={product.isFeatured} onChange={(e) => setProduct({ ...product, isFeatured: e.target.checked })} />
+              <label className="form-check-label" htmlFor="isFeatured">Featured</label>
             </div>
           </div>
         </div>
         <div className="mb-3">
-          <label htmlFor="tags" className="form-label">
-            Tags (comma-separated)
-          </label>
-          <input
-            type="text"
-            name="tags"
-            className="form-control"
-            onChange={handleChange}
-          />
+          <label htmlFor="tags" className="form-label">Tags (comma-separated)</label>
+          <input type="text" name="tags" className="form-control" onChange={handleChange} />
         </div>
         <div className="row mb-3">
           <div className="col-md-6">
-            <label htmlFor="image" className="form-label">
-              Image Upload
-            </label>
-            <input
-              type="file"
-              name="image"
-              className="form-control"
-              onChange={handleImageChange}
-              multiple
-            />
+            <label htmlFor="image" className="form-label">Image Upload</label>
+            <input type="file" name="image" className="form-control" onChange={handleImageChange} multiple />
           </div>
         </div>
-        <button type="submit" className="btn btn-primary">
-          Submit
-        </button>
+        <button type="submit" className="btn btn-primary">Submit</button>
       </form>
     </div>
   );
