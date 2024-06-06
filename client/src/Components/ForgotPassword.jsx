@@ -22,22 +22,34 @@ const ForgotPassword = () => {
       });
   };
   return (
-    <>
-      <div className="sign-up-container">
-        <form className="sign-up-form" onSubmit={handleSubmit}>
-          <h2>Forgot Password</h2>
-          <label htmlFor="email">Email:</label>
-          <input
-            type="email"
-            autoComplete="off"
-            placeholder="Email"
-            onChange={(e) => setEmail(e.target.value)}
-          />
-
-          <button type="submit">Send</button>
-        </form>
+    <div className="container mt-5">
+      <div className="row justify-content-center">
+        <div className="col-md-6">
+          <div className="card">
+            <div className="card-body">
+              <h2 className="text-center mb-4">Forgot Password</h2>
+              <form onSubmit={handleSubmit}>
+                <div className="form-group mb-2">
+                  <label htmlFor="email">Email:</label>
+                  <input
+                    type="email"
+                    className="form-control"
+                    autoComplete="off"
+                    placeholder="Enter your email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </div>
+                <button type="submit" className="btn btn-primary btn-block">
+                  Send
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
       </div>
-    </>
+    </div>
   );
 };
 

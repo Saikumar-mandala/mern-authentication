@@ -24,21 +24,28 @@ const ResetPassword = () => {
       });
   };
   return (
-    <>
-      <div className="sign-up-container">
-        <form className="sign-up-form" onSubmit={handleSubmit}>
-          <h2>Reset Password</h2>
-          <label htmlFor="password">Password:</label>
-          <input
-            type="password"
-            placeholder="******"
-            onChange={(e) => setPassword(e.target.value)}
-          />
-
-          <button type="submit">Send</button>
-        </form>
+    <div className="container">
+      <div className="row justify-content-center mt-5">
+        <div className="col-md-6">
+          <div className="card p-4">
+            <h2 className="mb-4">Reset Password</h2>
+            <form onSubmit={handleSubmit}>
+              <div className="mb-3">
+                <label htmlFor="password" className="form-label">New Password</label>
+                <input
+                  type="password"
+                  className="form-control"
+                  placeholder="Enter your new password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+              <button type="submit" className="btn btn-primary">Send</button>
+            </form>
+          </div>
+        </div>
       </div>
-    </>
+    </div>
   );
 };
 

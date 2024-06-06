@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import "../App.css";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -25,7 +24,7 @@ const Login = () => {
       .then((response) => {
         console.log("Response:", response.data);
         if (response.data.status) {
-          navigate("/");
+          navigate("/products-list");
         } else {
           console.log("Login failed");
         }
@@ -36,32 +35,51 @@ const Login = () => {
   };
 
   return (
-    <>
-      <div className="sign-up-container">
-        <form className="sign-up-form" onSubmit={handleSubmit}>
-          <h2>Login</h2>
-          <label htmlFor="email">Email:</label>
-          <input
-            type="email"
-            autoComplete="off"
-            placeholder="Email"
-            onChange={(e) => setEmail(e.target.value)}
-          />
-
-          <label htmlFor="password">Password:</label>
-          <input
-            type="password"
-            placeholder="******"
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <button type="submit">Login</button>
-          <Link to="/forgot-password">Forgot Password?</Link>
-          <p>
-            Don't Have an Account?<Link to="/signup">Signup</Link>
-          </p>
-        </form>
+    <div className="container">
+      <div className="row justify-content-center">
+        <div className="col-md-6">
+          <div className="card mt-5">
+            <div className="card-body">
+              <h2 className="card-title text-center">Login</h2>
+              <form onSubmit={handleSubmit}>
+                <div className="form-group mb-3">
+                  <label htmlFor="email">Email:</label>
+                  <input
+                    type="email"
+                    className="form-control"
+                    id="email"
+                    placeholder="Enter email"
+                    autoComplete="off"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
+                <div className="form-group mb-3">
+                  <label htmlFor="password">Password:</label>
+                  <input
+                    type="password"
+                    className="form-control"
+                    id="password"
+                    placeholder="Enter password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                </div>
+                <button type="submit" className="btn btn-primary w-100">Login</button>
+              </form>
+              <div className="text-center mt-3">
+                <Link to="/forgot-password">Forgot Password?</Link>
+              </div>
+              <div className="text-center mt-2">
+                <p>
+                  Don't have an account? <Link to="/signup">Signup</Link>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </>
+    </div>
   );
 };
 

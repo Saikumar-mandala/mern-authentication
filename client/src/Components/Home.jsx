@@ -1,5 +1,5 @@
-import axios from "axios";
 import React from "react";
+import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 
 const Home = () => {
@@ -19,14 +19,17 @@ const Home = () => {
   };
 
   return (
-    <>
-      <h1>This is the home page</h1>
-      <button>
-        <Link to="/dashboard">Dashboard</Link>
-      </button>
-      <br />
-      <button type="button" onClick={handleLogout}>Logout</button>
-    </>
+    <div className="container text-center my-5">
+      <h1 className="mb-4">This is the Home Page</h1>
+      <div className="d-grid gap-2 d-md-flex justify-content-md-center">
+        <Link to="/dashboard" className="btn btn-primary me-md-2">
+          Dashboard
+        </Link>
+        <button type="button" className="btn btn-danger" onClick={handleLogout}>
+          Logout
+        </button>
+      </div>
+    </div>
   );
 };
 
