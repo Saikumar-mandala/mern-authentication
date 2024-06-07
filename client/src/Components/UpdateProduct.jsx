@@ -20,12 +20,48 @@ const UpdateProduct = () => {
   }, [id, products]);
 
   const handleChange = (e) => {
-    if (e.target.name === "images") {
-      setImages([...e.target.files]);
+    const { name, value } = e.target;
+    if (name === "tags") {
+      // Ensure formData.tags is handled as an array
+      const tagsArray = Array.isArray(value) ? value : [value];
+      setFormData({ ...formData, [name]: tagsArray });
     } else {
-      setFormData({ ...formData, [e.target.name]: e.target.value });
+      setFormData({ ...formData, [name]: value });
     }
   };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -37,18 +73,40 @@ const UpdateProduct = () => {
       updatedData.append("category", formData.category);
       updatedData.append("inStock", formData.inStock);
       updatedData.append("isFeatured", formData.isFeatured);
-      updatedData.append("tags", formData.tags);
-
+  
+      // Ensure formData.tags is an array before calling join
+      const tagsArray = Array.isArray(formData.tags) ? formData.tags : [formData.tags];
+      updatedData.append("tags", tagsArray.join(","));
+  
       images.forEach((image) => {
         updatedData.append("images", image);
       });
-
+  
       await dispatch(updateProduct({ id, formData: updatedData }));
       navigate("/products-list");
     } catch (error) {
       console.error("Error updating product:", error.message);
     }
   };
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
 
   if (status === "loading") {
     return <div>Loading...</div>;
