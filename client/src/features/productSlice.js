@@ -25,18 +25,7 @@ export const addProduct = createAsyncThunk(
 // Update a product
 export const updateProduct = createAsyncThunk(
   "products/updateProduct",
-  async (product) => {
-    const { id, ...updateData } = product;
-    const formData = new FormData();
-    for (const key in updateData) {
-      if (key === "images") {
-        updateData.images.forEach((image, index) => {
-          formData.append(`images[${index}]`, image);
-        });
-      } else {
-        formData.append(key, updateData[key]);
-      }
-    }
+  async ({ id, formData }) => {
     const response = await axios.put(
       `http://localhost:5000/products/${id}`,
       formData,
@@ -59,8 +48,9 @@ export const deleteProduct = createAsyncThunk(
   }
 );
 
+// Search products
 export const searchProducts = createAsyncThunk(
-  "products/searchUser",
+  "products/searchProducts",
   async (query) => {
     const response = await axios.get(
       `http://localhost:5000/products?search=${query}`
@@ -96,7 +86,12 @@ const productSlice = createSlice({
       .addCase(addProduct.rejected, (state, action) => {
         state.error = action.error.message;
       })
+      .addCase(updateProduct.pending, (state) => {
+        state.status = "loading";
+      })
       .addCase(updateProduct.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        // Update the product in the state
         const index = state.products.findIndex(
           (product) => product._id === action.payload._id
         );
@@ -105,6 +100,7 @@ const productSlice = createSlice({
         }
       })
       .addCase(updateProduct.rejected, (state, action) => {
+        state.status = "failed";
         state.error = action.error.message;
       })
       .addCase(deleteProduct.fulfilled, (state, action) => {
@@ -113,6 +109,17 @@ const productSlice = createSlice({
         );
       })
       .addCase(deleteProduct.rejected, (state, action) => {
+        state.error = action.error.message;
+      })
+      .addCase(searchProducts.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(searchProducts.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.products = action.payload;
+      })
+      .addCase(searchProducts.rejected, (state, action) => {
+        state.status = "failed";
         state.error = action.error.message;
       });
   },

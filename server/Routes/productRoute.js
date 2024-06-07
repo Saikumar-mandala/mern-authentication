@@ -15,3 +15,4 @@ router.post("/", upload.array("images", 10), createProduct);
 router.put("/:id", upload.array("images", 10), updateProduct);
 router.delete("/:id", deleteProduct);
 module.exports = router;
+ 

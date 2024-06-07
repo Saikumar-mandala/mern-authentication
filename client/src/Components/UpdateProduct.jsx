@@ -1,87 +1,72 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { updateProduct } from "../features/productSlice";
 import { useNavigate, useParams } from "react-router-dom";
+import { updateProduct } from "../features/productSlice";
 
 const UpdateProduct = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const dispatch = useDispatch();
 
-  const [updateData, setUpdateData] = useState({});
   const { products, status } = useSelector((state) => state.products);
+  const [formData, setFormData] = useState({});
+  const [images, setImages] = useState([]);
 
   useEffect(() => {
-    if (id && products.length > 0) {
-      const singleProduct = products.find((product) => product._id === id);
-      if (singleProduct) {
-        setUpdateData(singleProduct);
-      }
+    const productToUpdate = products.find((product) => product._id === id);
+    if (productToUpdate) {
+      setFormData(productToUpdate);
     }
   }, [id, products]);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setUpdateData({ ...updateData, [name]: value });
-  };
-
-  const handleCheckboxChange = (e) => {
-    const { name, checked } = e.target;
-    setUpdateData({ ...updateData, [name]: checked });
-  };
-
-  const handleImageChange = (e) => {
-    const files = e.target.files;
-    const imagesArray = [];
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      imagesArray.push(file);
+  const handleChange = (e) => {
+    if (e.target.name === "images") {
+      setImages([...e.target.files]);
+    } else {
+      setFormData({ ...formData, [e.target.name]: e.target.value });
     }
-    setUpdateData({ ...updateData, images: imagesArray });
   };
-  const handleUpdate = (e) => {
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append("name", updateData.name);
-    formData.append("description", updateData.description);
-    formData.append("price", updateData.price);
-    formData.append("category", updateData.category);
-    formData.append("inStock", updateData.inStock);
-    formData.append("isFeatured", updateData.isFeatured);
-  
-    if (updateData.tags) {
-      formData.append("tags", updateData.tags.join(","));
-    }
-  
-    if (updateData.images) {
-      updateData.images.forEach((image, index) => {
-        formData.append(`images[${index}]`, image);
+    try {
+      const updatedData = new FormData();
+      updatedData.append("name", formData.name);
+      updatedData.append("description", formData.description);
+      updatedData.append("price", formData.price);
+      updatedData.append("category", formData.category);
+      updatedData.append("inStock", formData.inStock);
+      updatedData.append("isFeatured", formData.isFeatured);
+      updatedData.append("tags", formData.tags);
+
+      images.forEach((image) => {
+        updatedData.append("images", image);
       });
-    }
-  
-    dispatch(updateProduct({ id, formData })).then(() => {
+
+      await dispatch(updateProduct({ id, formData: updatedData }));
       navigate("/products-list");
-    });
+    } catch (error) {
+      console.error("Error updating product:", error.message);
+    }
   };
-  
-  
 
   if (status === "loading") {
     return <div>Loading...</div>;
   }
 
+
   return (
     <div className="container my-5">
       <h2>Edit Product</h2>
-      <form onSubmit={handleUpdate}>
+      <form onSubmit={handleSubmit}>
         <div className="mb-3">
           <label className="form-label">Product Name</label>
           <input
             type="text"
             name="name"
             className="form-control"
-            value={updateData.name || ""}
-            onChange={handleInputChange}
+            value={formData.name || ""}
+            onChange={handleChange}
           />
         </div>
 
@@ -91,8 +76,8 @@ const UpdateProduct = () => {
             type="text"
             name="description"
             className="form-control"
-            value={updateData.description || ""}
-            onChange={handleInputChange}
+            value={formData.description || ""}
+            onChange={handleChange}
           />
         </div>
 
@@ -102,8 +87,8 @@ const UpdateProduct = () => {
             type="number"
             name="price"
             className="form-control"
-            value={updateData.price || ""}
-            onChange={handleInputChange}
+            value={formData.price || ""}
+            onChange={handleChange}
           />
         </div>
 
@@ -113,8 +98,8 @@ const UpdateProduct = () => {
             type="text"
             name="category"
             className="form-control"
-            value={updateData.category || ""}
-            onChange={handleInputChange}
+            value={formData.category || ""}
+            onChange={handleChange}
           />
         </div>
         <div className="mb-3 form-check">
@@ -122,8 +107,8 @@ const UpdateProduct = () => {
             className="form-check-input"
             type="checkbox"
             name="inStock"
-            checked={updateData.inStock || false}
-            onChange={handleCheckboxChange}
+            checked={formData.inStock || false}
+            onChange={handleChange}
           />
           <label className="form-check-label">In Stock</label>
         </div>
@@ -132,8 +117,8 @@ const UpdateProduct = () => {
             className="form-check-input"
             type="checkbox"
             name="isFeatured"
-            checked={updateData.isFeatured || false}
-            onChange={handleCheckboxChange}
+            checked={formData.isFeatured || false}
+            onChange={handleChange}
           />
           <label className="form-check-label">Featured</label>
         </div>
@@ -146,13 +131,12 @@ const UpdateProduct = () => {
             type="file"
             name="images"
             className="form-control"
-            onChange={handleImageChange}
-            
+            onChange={handleChange}
           />
-          {updateData.images && updateData.images.length > 0 && (
+          {formData.images && formData.images.length > 0 && (
             <img
-              src={`http://localhost:5000/images/uploads/${updateData.images[0].url}`}
-              alt={updateData.description}
+              src={`http://localhost:5000/images/uploads/${formData.images[0].url}`}
+              alt={formData.description}
               width="50"
             />
           )}
@@ -164,8 +148,8 @@ const UpdateProduct = () => {
             type="text"
             name="tags"
             className="form-control"
-            value={updateData.tags ? updateData.tags.join(", ") : ""}
-            onChange={handleInputChange}
+            value={formData.tags ? formData.tags.join(", ") : ""}
+            onChange={handleChange}
           />
         </div>
 

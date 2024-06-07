@@ -56,6 +56,7 @@ const createProduct = async (req, res) => {
 
 // Update a product
 const updateProduct = async (req, res) => {
+  const { id } = req.params;
   const { name, description, price, category, inStock, isFeatured, tags } =
     req.body;
 
@@ -68,29 +69,24 @@ const updateProduct = async (req, res) => {
   }
 
   try {
-    const existingProduct = await Product.findById(req.params.id);
+    const existingProduct = await Product.findById(id);
     if (!existingProduct) {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    if (images.length === 0) {
-      images = existingProduct.images;
+    // Update product fields
+    existingProduct.name = name;
+    existingProduct.description = description;
+    existingProduct.price = price;
+    existingProduct.category = category;
+    existingProduct.inStock = inStock;
+    existingProduct.isFeatured = isFeatured;
+    existingProduct.tags = tags ? tags.split(",").map((tag) => tag.trim()) : [];
+    if (images.length > 0) {
+      existingProduct.images = images;
     }
 
-    const updatedProduct = await Product.findByIdAndUpdate(
-      req.params.id,
-      {
-        name,
-        description,
-        price,
-        category,
-        inStock,
-        isFeatured,
-        tags: tags ? tags.split(",").map((tag) => tag.trim()) : [],
-        images,
-      },
-      { new: true }
-    );
+    const updatedProduct = await existingProduct.save();
 
     res.status(200).json(updatedProduct);
   } catch (error) {
@@ -98,6 +94,8 @@ const updateProduct = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+
 
 // Delete a product
 const deleteProduct = async (req, res) => {
