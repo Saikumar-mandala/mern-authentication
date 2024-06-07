@@ -1,5 +1,5 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 const Product = require("../models/Product");
 
 // Get all products
@@ -53,23 +53,14 @@ const createProduct = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
+ 
 // Update a product
 const updateProduct = async (req, res) => {
   const { id } = req.params;
-  const { name, description, price, category, inStock, isFeatured, tags } =
-    req.body;
-
-  let images = [];
-  if (req.files && req.files.length > 0) {
-    images = req.files.map((file) => ({
-      url: file.filename,
-      description: file.originalname,
-    }));
-  }
+  const { name, description, price, category, inStock, isFeatured, tags } = req.body;
 
   try {
-    const existingProduct = await Product.findById(id);
+    let existingProduct = await Product.findById(id);
     if (!existingProduct) {
       return res.status(404).json({ message: "Product not found" });
     }
@@ -82,16 +73,38 @@ const updateProduct = async (req, res) => {
     existingProduct.inStock = inStock;
     existingProduct.isFeatured = isFeatured;
     existingProduct.tags = tags ? tags.split(",").map((tag) => tag.trim()) : [];
-    if (images.length > 0) {
+
+    // Check if new images are provided
+    if (req.files && req.files.length > 0) {
+      // Delete existing images if any
+      if (existingProduct.images && existingProduct.images.length > 0) {
+        existingProduct.images.forEach((image) => {
+          const imagePath = path.join(
+            __dirname,
+            "../public/images/uploads",
+            image.url
+          );
+          fs.unlink(imagePath, (err) => {
+            if (err) {
+              console.error(`Failed to delete image file: ${image.url}`, err);
+            }
+          });
+        });
+      }
+
+      const images = req.files.map((file) => ({
+        url: file.filename,
+        description: file.originalname,
+      }));
       existingProduct.images = images;
     }
 
+    // Save the updated product
     const updatedProduct = await existingProduct.save();
-
     res.status(200).json(updatedProduct);
   } catch (error) {
     console.error("Error updating product:", error.message);
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: "Failed to update product" });
   }
 };
 
@@ -108,7 +121,11 @@ const deleteProduct = async (req, res) => {
     // Delete images from the filesystem
     if (product.images && product.images.length > 0) {
       product.images.forEach((image) => {
-        const imagePath = path.join(__dirname, '../public/images/uploads', image.url);
+        const imagePath = path.join(
+          __dirname,
+          "../public/images/uploads",
+          image.url
+        );
         fs.unlink(imagePath, (err) => {
           if (err) {
             console.error(`Failed to delete image file: ${image.url}`, err);

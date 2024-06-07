@@ -22,46 +22,13 @@ const UpdateProduct = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (name === "tags") {
-      // Ensure formData.tags is handled as an array
-      const tagsArray = Array.isArray(value) ? value : [value];
-      setFormData({ ...formData, [name]: tagsArray });
+      setFormData({ ...formData, [name]: value.split(",").map(tag => tag.trim()) });
+    } else if (name === "images") {
+      setImages(Array.from(e.target.files));
     } else {
       setFormData({ ...formData, [name]: value });
     }
   };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -73,45 +40,22 @@ const UpdateProduct = () => {
       updatedData.append("category", formData.category);
       updatedData.append("inStock", formData.inStock);
       updatedData.append("isFeatured", formData.isFeatured);
-  
-      // Ensure formData.tags is an array before calling join
-      const tagsArray = Array.isArray(formData.tags) ? formData.tags : [formData.tags];
-      updatedData.append("tags", tagsArray.join(","));
-  
+      updatedData.append("tags", formData.tags.join(","));
+
       images.forEach((image) => {
         updatedData.append("images", image);
       });
-  
+
       await dispatch(updateProduct({ id, formData: updatedData }));
       navigate("/products-list");
     } catch (error) {
       console.error("Error updating product:", error.message);
     }
   };
-  
-  
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
 
   if (status === "loading") {
     return <div>Loading...</div>;
   }
-
 
   return (
     <div className="container my-5">
@@ -127,7 +71,6 @@ const UpdateProduct = () => {
             onChange={handleChange}
           />
         </div>
-
         <div className="mb-3">
           <label className="form-label">Description</label>
           <input
@@ -138,7 +81,6 @@ const UpdateProduct = () => {
             onChange={handleChange}
           />
         </div>
-
         <div className="mb-3">
           <label className="form-label">Price</label>
           <input
@@ -149,7 +91,6 @@ const UpdateProduct = () => {
             onChange={handleChange}
           />
         </div>
-
         <div className="mb-3">
           <label className="form-label">Category</label>
           <input
@@ -166,7 +107,9 @@ const UpdateProduct = () => {
             type="checkbox"
             name="inStock"
             checked={formData.inStock || false}
-            onChange={handleChange}
+            onChange={(e) =>
+              setFormData({ ...formData, inStock: e.target.checked })
+            }
           />
           <label className="form-check-label">In Stock</label>
         </div>
@@ -176,11 +119,12 @@ const UpdateProduct = () => {
             type="checkbox"
             name="isFeatured"
             checked={formData.isFeatured || false}
-            onChange={handleChange}
+            onChange={(e) =>
+              setFormData({ ...formData, isFeatured: e.target.checked })
+            }
           />
           <label className="form-check-label">Featured</label>
         </div>
-
         <div className="mb-3">
           <label htmlFor="image" className="form-label">
             Image Upload
@@ -190,6 +134,7 @@ const UpdateProduct = () => {
             name="images"
             className="form-control"
             onChange={handleChange}
+            multiple
           />
           {formData.images && formData.images.length > 0 && (
             <img
@@ -199,7 +144,6 @@ const UpdateProduct = () => {
             />
           )}
         </div>
-
         <div className="mb-3">
           <label className="form-label">Tags</label>
           <input
@@ -210,7 +154,6 @@ const UpdateProduct = () => {
             onChange={handleChange}
           />
         </div>
-
         <button type="submit" className="btn btn-primary">
           Update
         </button>
