@@ -1,8 +1,5 @@
 const express = require("express");
-const multer = require("multer");
-const path = require("path");
 const upload = require("../utils/multerUploadImage")
-
 const {
   getAllProducts,
   getProductById,
@@ -12,14 +9,9 @@ const {
 } = require("../Controllers/productController");
 
 const router = express.Router();
-
-
 router.get("/", getAllProducts);
 router.get("/:id", getProductById);
-
 router.post("/", upload.array("images", 10), createProduct);
 router.put("/:id", upload.array("images", 10), updateProduct);
-
 router.delete("/:id", deleteProduct);
-
 module.exports = router;

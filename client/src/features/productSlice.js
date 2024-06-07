@@ -59,7 +59,6 @@ export const deleteProduct = createAsyncThunk(
   }
 );
 
-
 export const searchProducts = createAsyncThunk(
   "products/searchUser",
   async (query) => {

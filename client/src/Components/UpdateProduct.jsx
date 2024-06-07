@@ -35,18 +35,36 @@ const UpdateProduct = () => {
     const imagesArray = [];
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
-      imagesArray.push({ url: URL.createObjectURL(file), description: file.name });
+      imagesArray.push(file);
     }
     setUpdateData({ ...updateData, images: imagesArray });
   };
-  
-
   const handleUpdate = (e) => {
     e.preventDefault();
-    dispatch(updateProduct({ id, ...updateData })).then(() => {
+    const formData = new FormData();
+    formData.append("name", updateData.name);
+    formData.append("description", updateData.description);
+    formData.append("price", updateData.price);
+    formData.append("category", updateData.category);
+    formData.append("inStock", updateData.inStock);
+    formData.append("isFeatured", updateData.isFeatured);
+  
+    if (updateData.tags) {
+      formData.append("tags", updateData.tags.join(","));
+    }
+  
+    if (updateData.images) {
+      updateData.images.forEach((image, index) => {
+        formData.append(`images[${index}]`, image);
+      });
+    }
+  
+    dispatch(updateProduct({ id, formData })).then(() => {
       navigate("/products-list");
     });
   };
+  
+  
 
   if (status === "loading") {
     return <div>Loading...</div>;
@@ -120,7 +138,6 @@ const UpdateProduct = () => {
           <label className="form-check-label">Featured</label>
         </div>
 
-        {/* Other form inputs */}
         <div className="mb-3">
           <label htmlFor="image" className="form-label">
             Image Upload
@@ -130,7 +147,7 @@ const UpdateProduct = () => {
             name="images"
             className="form-control"
             onChange={handleImageChange}
-            multiple
+            
           />
           {updateData.images && updateData.images.length > 0 && (
             <img
@@ -140,8 +157,20 @@ const UpdateProduct = () => {
             />
           )}
         </div>
-        <button className="btn btn-primary" type="submit">
-          Submit
+
+        <div className="mb-3">
+          <label className="form-label">Tags</label>
+          <input
+            type="text"
+            name="tags"
+            className="form-control"
+            value={updateData.tags ? updateData.tags.join(", ") : ""}
+            onChange={handleInputChange}
+          />
+        </div>
+
+        <button type="submit" className="btn btn-primary">
+          Update
         </button>
       </form>
     </div>
