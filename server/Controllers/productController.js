@@ -1,6 +1,8 @@
 const fs = require("fs");
 const path = require("path");
 const Product = require("../models/Product");
+// const { cloudinaryUploadImg, cloudinaryDeleteImg } = require("../utils/cloudinary");
+
 
 // Get all products
 const getAllProducts = async (req, res) => {
@@ -139,6 +141,66 @@ const deleteProduct = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+
+
+const uploadImages = async (req, res) => {
+  try {
+    const uploader = (path) => cloudinaryUploadImg(path, "images");
+    const urls = [];
+    const files = req.files || [];
+    for (const file of files) {
+      const { path } = file;
+      const newpath = await uploader(path);
+      urls.push(newpath);
+      fs.unlinkSync(path);
+    }
+    res.json(urls);
+  } catch (error) {
+    console.error("Error uploading images:", error);
+    res.status(500).json({ message: "Failed to upload images." });
+  }
+};
+
+// Delete images
+const deleteImages = async (req, res) => {
+  const { id } = req.params;
+  try {
+    await cloudinaryDeleteImg(id, "images");
+    res.json({ message: "Deleted image" });
+  } catch (error) {
+    console.error("Error deleting images:", error);
+    res.status(500).json({ message: "Failed to delete images." });
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 module.exports = {
   getAllProducts,
